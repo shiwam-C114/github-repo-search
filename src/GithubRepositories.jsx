@@ -24,7 +24,7 @@ function GithubRepositories() {
   const [order_by, setOrder_by] = useState("desc");
   const [page, setPage] = useState(2);
   const [pages, setPages] = useState([1, 2, 3]);
-  const [per_page, setPer_page] = useState(0);
+  const [per_page, setPer_page] = useState(20);
 
   async function search(value, sort_by = "updated") {
     let res = await axios.get(
@@ -70,8 +70,8 @@ function GithubRepositories() {
   }
   function isNext() {
     // console.log("isprev called",++a, page> 3);
-    console.log(Math.ceil(data.total_count/10));
-    return false?"none":""
+    console.log(data.total_count,Math.ceil(data.total_count/per_page));
+    return pages[pages.length-1] === Math.ceil(data.total_count/per_page)?"none":""
   }
   function changeArr(Arr, val) {
     console.log(Arr, val);
@@ -103,7 +103,7 @@ function GithubRepositories() {
         <div>
           <Menu closeOnSelect={true}>
             <MenuButton as={Button} margin={"0 10px"} colorScheme="blue">
-              sort
+              sort by updated
             </MenuButton>
             <MenuList minWidth="240px">
               <MenuOptionGroup defaultValue="desc" title="Order" type="radio">
@@ -133,7 +133,7 @@ function GithubRepositories() {
           <Button onClick={()=>{setPages(prev=>changeArr(prev, -3))}} isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
             prev
           </Button>
-          <Button isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
+          <Button onClick={()=>{setPages([1,2,3])}} isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
             1
           </Button>
           <Button isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
@@ -155,8 +155,8 @@ function GithubRepositories() {
           <Button isDisabled={false} display={isNext()} m={" 0 3px"} colorScheme="teal" size="xs">
             ...
           </Button>
-          <Button isDisabled={false} display={isNext()} m={" 0 3px"} colorScheme="teal" size="xs">
-            {Math.ceil(data.total_count/10)}
+          <Button onClick={()=>{setPages([Math.ceil(data.total_count/per_page)-2,Math.ceil(data.total_count/per_page)-1,Math.ceil(data.total_count/per_page)])}} isDisabled={false} display={isNext()} m={" 0 3px"} colorScheme="teal" size="xs">
+            {Math.ceil(data.total_count/per_page)}
           </Button>
 
           <Button onClick={()=>{setPages(prev=>changeArr(prev, 3))}} display={isNext()} isDisabled={false} m={" 0 3px"} colorScheme="teal" size="xs">
