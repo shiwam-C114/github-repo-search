@@ -133,7 +133,7 @@ function GithubRepositories() {
           <Button onClick={()=>{setPages(prev=>changeArr(prev, -3))}} isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
             prev
           </Button>
-          <Button onClick={()=>{setPages([1,2,3])}} isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
+          <Button onClick={()=>{setPages([1,2,3]); setPage(1)}} isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
             1
           </Button>
           <Button isDisabled={false} onClick={()=>{setPages(prev=>changeArr(prev, -10))}} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
@@ -152,7 +152,7 @@ function GithubRepositories() {
               </Button>
             </>
           ))}
-          <Button isDisabled={false} onClick={()=>{setPages(prev=>changeArr(prev, -10))}} display={isNext()} m={" 0 3px"} colorScheme="teal" size="xs">
+          <Button isDisabled={false} onClick={()=>{setPages(prev=>changeArr(prev, 10))}} display={isNext()} m={" 0 3px"} colorScheme="teal" size="xs">
             ...
           </Button>
           <Button onClick={()=>{setPages([Math.ceil(data.total_count/per_page)-2,Math.ceil(data.total_count/per_page)-1,Math.ceil(data.total_count/per_page)])}} isDisabled={false} display={isNext()} m={" 0 3px"} colorScheme="teal" size="xs">
