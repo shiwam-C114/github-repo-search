@@ -10,26 +10,23 @@ import {
   Text,
   Flex,
   Spacer,
+  Menu,
+  MenuButton,
+  MenuList,
+  MenuItemOption,
+  MenuOptionGroup,
 } from "@chakra-ui/react";
-import {
-    Menu,
-    MenuButton,
-    MenuList,
-    MenuItem,
-    MenuItemOption,
-    MenuGroup,
-    MenuOptionGroup,
-    MenuDivider,
-  } from '@chakra-ui/react'
+
+let a = 0
 function GithubRepositories() {
   const [query, setQuery] = useState("react");
   const [data, setData] = useState({});
-  const [order_by, setOrder_by] = useState("desc")
-  const [page, setPage] = useState(1)
-  const [per_page, setPer_page] = useState(20)
+  const [order_by, setOrder_by] = useState("desc");
+  const [page, setPage] = useState(2);
+  const [pages, setPages] = useState([1, 2, 3]);
+  const [per_page, setPer_page] = useState(0);
 
   async function search(value, sort_by = "updated") {
-
     let res = await axios.get(
       `https://api.github.com/search/repositories?q=${value}&page=${page}&per_page=${per_page}&sort=${sort_by}&order=${order_by}`
     );
@@ -39,7 +36,7 @@ function GithubRepositories() {
 
   useEffect(() => {
     search(query);
-  }, [order_by]);
+  }, [order_by, page]);
 
   function Card({
     name,
@@ -66,6 +63,21 @@ function GithubRepositories() {
       </Box>
     );
   }
+  
+  function isPrev() {
+    console.log("isprev called",++a, page> 3);
+    return pages[0] === 1?"none":""
+  }
+  function isNext() {
+    // console.log("isprev called",++a, page> 3);
+    console.log(Math.ceil(data.total_count/10));
+    return false?"none":""
+  }
+  function changeArr(Arr, val) {
+    console.log(Arr, val);
+    return Arr.map(element => element+=val);
+    
+  }
 
   return (
     <div>
@@ -74,56 +86,82 @@ function GithubRepositories() {
           width={"20%"}
           m={10}
           focusBorderColor="lime"
+          borderColor={"blackAlpha"}
           placeholder=" Input repo name to search"
           onChange={(e) => {
             setQuery(e.target.value);
-          }}
-        ></Input>
+          }}></Input>
         <Button
           onClick={() => {
             search(query);
-          }}
-        >
+          }}>
           Search
         </Button>
       </Center>
 
       <Flex>
-        
         <div>
-        <Menu closeOnSelect={true} >
-  <MenuButton as={Button} margin={"0 10px"} colorScheme='blue'>
-    sort
-  </MenuButton>
-  <MenuList minWidth='240px'>
-    <MenuOptionGroup defaultValue='desc' title='Order' type='radio'>
-      <MenuItemOption onClick={()=>{setOrder_by("arc")}} value='asc'>Ascending</MenuItemOption>
-      <MenuItemOption onClick={()=>{setOrder_by("desc")}} value='desc'>Descending</MenuItemOption>
-    </MenuOptionGroup>
-  </MenuList>
-</Menu>
+          <Menu closeOnSelect={true}>
+            <MenuButton as={Button} margin={"0 10px"} colorScheme="blue">
+              sort
+            </MenuButton>
+            <MenuList minWidth="240px">
+              <MenuOptionGroup defaultValue="desc" title="Order" type="radio">
+                <MenuItemOption
+                  onClick={() => {
+                    setOrder_by("arc");
+                  }}
+                  value="asc">
+                  Ascending
+                </MenuItemOption>
+                <MenuItemOption
+                  onClick={() => {
+                    setOrder_by("desc");
+                  }}
+                  value="desc">
+                  Descending
+                </MenuItemOption>
+              </MenuOptionGroup>
+            </MenuList>
+          </Menu>
         </div>
         <Spacer />
         <div>
-        <Button   isDisabled={false} m={" 0 3px"} colorScheme="teal" size="xs">
-          prev
-        </Button>
-        
-        <Button  borderRadius={"50%"} isDisabled={false} m={" 0 3px"} colorScheme="teal" size="xs">
-          1
-        </Button>
-        <Button  borderRadius={"50%"} isDisabled={false} m={" 0 3px"} colorScheme="teal" size="xs">
-          2
-        </Button>
-        <Button  borderRadius={"50%"} isDisabled={false} m={" 0 3px"} colorScheme="teal" size="xs">
-          3
-        </Button>
-        <Button  borderRadius={"50%"} isDisabled={false} m={" 0 3px"} colorScheme="teal" size="xs">
-          4
-        </Button>
-        <Button  isDisabled={false} m={" 0 3px"} colorScheme="teal" size="xs">
-          Next
-        </Button>
+            <Button colorScheme="teal" size="sm" onClick={()=>{search(query)}} >set per_page</Button>
+            <Input width="50px" margin={"0 5px"} size="xs" borderColor={"black"} onChange={(e)=>{setPer_page(e.target.value)}} value={per_page}></Input>
+
+          <Button onClick={()=>{setPages(prev=>changeArr(prev, -3))}} isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
+            prev
+          </Button>
+          <Button isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
+            1
+          </Button>
+          <Button isDisabled={false} display={isPrev()} m={" 0 3px"} colorScheme="teal" size="xs">
+            ...
+          </Button>
+          {pages.map((item) => (
+            <>
+              <Button
+              onClick={()=>{setPage(item)}}
+                borderRadius={"50%"}
+                isDisabled={false}
+                m={" 0 3px"}
+                colorScheme="teal"
+                size="xs">
+                {item}
+              </Button>
+            </>
+          ))}
+          <Button isDisabled={false} display={isNext()} m={" 0 3px"} colorScheme="teal" size="xs">
+            ...
+          </Button>
+          <Button isDisabled={false} display={isNext()} m={" 0 3px"} colorScheme="teal" size="xs">
+            {Math.ceil(data.total_count/10)}
+          </Button>
+
+          <Button onClick={()=>{setPages(prev=>changeArr(prev, 3))}} display={isNext()} isDisabled={false} m={" 0 3px"} colorScheme="teal" size="xs">
+            Next
+          </Button>
         </div>
       </Flex>
 
